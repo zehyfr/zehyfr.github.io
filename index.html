@@ -5,31 +5,36 @@
     </head>
     <body>
         <nav id="navbar" style="border:1px solid black;">
-            <span style="float:right" v-on:hover="alert('damn')">Listes des Ingredients</span>
+            <input ref="input" v-on:keyup.enter="search" type="text" placeholder="Search"/>
+            <!--TODO shopping cart-->
+            <span style="float:right">cart</span>
         </nav>
-        <div id="recipiesComp">
-            <input ref="input" v-on:keyup.enter="search" type="text"/> 
-            <ul id="recipesList">
-                <li v-for="recipe in recipes" :key="recipe.title">
-                    {{ recipe.title }}
-                </li>
-            </ul>
+        <div id="recipesList">
+            <div v-for="recipe in recipes" :key="recipe.title">
+                <span>{{recipe.title}}</span>
+                <img :src="recipe.image">
+            </div>
         </div>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
     <script>
-        new Vue({
-            el: "#recipesComp",
+        var list = new Vue({
+            el : "#recipesList",
             data : {
-                recipes : [{name:"Couscous"}],
+                recipes : []
+            }
+        })
+        new Vue({
+            el: "#navbar",
+            data : {
                 url : "https://api.spoonacular.com/recipes/complexSearch?apiKey=68e2fea5053d408383160530db1a36cb&query=",
             },
             methods:{
                 search : function(event) {
                     fetch(this.url + this.$refs.input.value)
                     .then(response => response.json())
-                    .then(response => list.recipies = response)
-                    .catch(error => alert("Erreur : " + error))
+                    .then(response => list.recipes = response["results"])
+                    .catch(error => alert("Error : " + error))
                 }
             }
         })
